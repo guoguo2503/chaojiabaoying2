@@ -28,11 +28,23 @@ export default function ArgumentForm({ onResponsesGenerated, setLoading }: Argum
   const [intensity, setIntensity] = useState([5]);
   const [recentArguments, setRecentArguments] = useState<string[]>([]);
   const [selectedRecent, setSelectedRecent] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const recent = getRecentArguments();
-    setRecentArguments(recent);
+    setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      try {
+        const recent = getRecentArguments();
+        setRecentArguments(recent);
+      } catch (error) {
+        console.error("Error loading recent arguments:", error);
+        setRecentArguments([]);
+      }
+    }
+  }, [mounted]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,11 +59,16 @@ export default function ArgumentForm({ onResponsesGenerated, setLoading }: Argum
     try {
       const responses = await generateResponses(opponentWords, intensity[0]);
       onResponsesGenerated(responses);
-      saveArgument(opponentWords);
       
-      // Update recent arguments list
-      const recent = getRecentArguments();
-      setRecentArguments(recent);
+      if (mounted) {
+        try {
+          saveArgument(opponentWords);
+          const recent = getRecentArguments();
+          setRecentArguments(recent);
+        } catch (error) {
+          console.error("Error saving argument:", error);
+        }
+      }
     } catch (error) {
       console.error("Error generating responses:", error);
       toast.error("生成回复失败，请重试");
@@ -65,6 +82,26 @@ export default function ArgumentForm({ onResponsesGenerated, setLoading }: Argum
     setSelectedRecent(value);
     setOpponentWords(value);
   };
+
+  if (!mounted) {
+    return (
+      <Card className="mb-8">
+        <CardContent className="pt-6">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-24 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mb-8">
