@@ -13,7 +13,7 @@
 
 ## 🚀 在线体验
 
-[点击这里体验应用](https://your-username.github.io/chaojiabaoying)
+[点击这里体验应用](https://guoguo2503.github.io/chaojiabaoying2)
 
 ## 🛠️ 技术栈
 
@@ -29,8 +29,8 @@
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/your-username/chaojiabaoying.git
-cd chaojiabaoying
+git clone https://github.com/guoguo2503/chaojiabaoying2.git
+cd chaojiabaoying2
 ```
 
 2. 安装依赖
