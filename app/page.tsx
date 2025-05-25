@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { Toaster } from "sonner";
 import dynamic from "next/dynamic";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -8,17 +8,42 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 // 动态导入组件，禁用服务端渲染
 const ArgumentForm = dynamic(() => import("@/components/ArgumentForm"), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-200 rounded-lg h-64"></div>
+  loading: () => (
+    <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
+      <div className="space-y-4">
+        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+        <div className="h-24 bg-gray-200 rounded animate-pulse"></div>
+        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    </div>
+  )
 });
 
 const ResponseDisplay = dynamic(() => import("@/components/ResponseDisplay"), {
   ssr: false,
-  loading: () => <div className="animate-pulse bg-gray-200 rounded-lg h-32"></div>
+  loading: () => (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
+    </div>
+  )
 });
 
 function MainContent() {
   const [responses, setResponses] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 flex items-center justify-center">
+        <div className="text-white text-xl">加载中...</div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen relative overflow-hidden">
@@ -43,16 +68,12 @@ function MainContent() {
             AI智能回击，让你在争论中占据上风
           </p>
           
-          <Suspense fallback={<div className="animate-pulse bg-gray-200 rounded-lg h-64"></div>}>
-            <ArgumentForm 
-              onResponsesGenerated={setResponses} 
-              setLoading={setLoading} 
-            />
-          </Suspense>
+          <ArgumentForm 
+            onResponsesGenerated={setResponses} 
+            setLoading={setLoading} 
+          />
           
-          <Suspense fallback={<div className="animate-pulse bg-gray-200 rounded-lg h-32"></div>}>
-            <ResponseDisplay responses={responses} loading={loading} />
-          </Suspense>
+          <ResponseDisplay responses={responses} loading={loading} />
         </div>
       </div>
       
@@ -126,13 +147,7 @@ function MainContent() {
 export default function Home() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
-      <Suspense fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 flex items-center justify-center">
-          <div className="text-white text-xl">加载中...</div>
-        </div>
-      }>
-        <MainContent />
-      </Suspense>
+      <MainContent />
     </ThemeProvider>
   );
 }
