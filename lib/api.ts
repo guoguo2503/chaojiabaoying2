@@ -25,8 +25,8 @@ export async function generateResponses(
   opponentWords: string,
   intensity: number
 ): Promise<string[]> {
-  const API_KEY = "sk-hmnwfcnixfotejkfstpbxetstoukbuicttfqsshlmznwlxne";
-  const API_URL = "https://api.siliconflow.cn/v1/chat/completions";
+  const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "sk-hmnwfcnixfotejkfstpbxetstoukbuicttfqsshlmznwlxne";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.siliconflow.cn/v1/chat/completions";
 
   // Create a prompt that guides the model to generate appropriate responses
   const prompt = createPrompt(opponentWords, intensity);
@@ -39,7 +39,7 @@ export async function generateResponses(
         "Authorization": `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
-        model: "Pro/deepseek-ai/DeepSeek-V3",
+        model: process.env.NEXT_PUBLIC_MODEL_NAME || "Pro/deepseek-ai/DeepSeek-V3",
         messages: [
           {
             role: "system",
@@ -97,7 +97,7 @@ function parseResponses(content: string): string[] {
   if (parts.length !== 3) {
     // Try to find numbered responses (1. 2. 3.) and clean them
     const numberedRegex = /[1-3][\.\)]\s*([\s\S]+?)(?=(?:[1-3][\.\)]|$))/g;
-    const numberedMatches = [...cleanContent.matchAll(numberedRegex)];
+    const numberedMatches = Array.from(cleanContent.matchAll(numberedRegex));
     
     if (numberedMatches.length === 3) {
       return numberedMatches.map(match => 
