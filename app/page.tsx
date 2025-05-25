@@ -2,9 +2,17 @@
 
 import { useState } from "react";
 import { Toaster } from "sonner";
-import ArgumentForm from "@/components/ArgumentForm";
-import ResponseDisplay from "@/components/ResponseDisplay";
+import dynamic from "next/dynamic";
 import { ThemeProvider } from "@/components/ThemeProvider";
+
+// 动态导入组件，禁用服务端渲染
+const ArgumentForm = dynamic(() => import("@/components/ArgumentForm"), {
+  ssr: false,
+});
+
+const ResponseDisplay = dynamic(() => import("@/components/ResponseDisplay"), {
+  ssr: false,
+});
 
 export default function Home() {
   const [responses, setResponses] = useState<string[]>([]);
