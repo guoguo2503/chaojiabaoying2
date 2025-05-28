@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import AnimatedBackground from "@/components/AnimatedBackground";
 
 export default function Home() {
   const [opponentWords, setOpponentWords] = useState("");
@@ -71,8 +72,17 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950">
-      <div className="container max-w-md mx-auto px-4 py-8">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* 动态背景层 */}
+      <div className="absolute inset-0 z-0">
+        <AnimatedBackground />
+      </div>
+      
+      {/* 渐变覆盖层 */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-br from-slate-900/80 via-blue-900/70 to-indigo-950/80"></div>
+      
+      {/* 内容层 */}
+      <div className="relative z-20 container max-w-md mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-4">吵架包赢</h1>
           <p className="text-gray-300">AI智能回击，让你在争论中占据上风</p>
